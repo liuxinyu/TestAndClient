@@ -31,8 +31,8 @@
     			<Button 
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
-					android:onClick="onButtonGetGeo"
-					android:text="Get Geo"/>
+					android:onClick="onButtonDisplayGoogleMapGPS"
+					android:text="Main: GoogleMap on current GPS"/>
 				<LinearLayout 
 					android:orientation="horizontal"
 					android:layout_width="fill_parent"
@@ -47,10 +47,16 @@
 						android:layout_height="wrap_content"
 						/>
 				</LinearLayout>
-				<AnalogClock android:id="@+id/tab1"
+				<Button 
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
-					android:layout_centerHorizontal="true" />	
+					android:onClick="onButtonGetGeo"
+					android:text="Test: Get Geo by Native Android"/>				
+				<Button 
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:onClick="onButtonGetGeoJS2Native"
+					android:text="Test: Get Geo and keep updated"/>				
     		</LinearLayout>			
 		</FrameLayout>
 	</LinearLayout>

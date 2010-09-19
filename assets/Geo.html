@@ -1,10 +1,10 @@
 <html>
 <head>
-<title>Android GeoWebOne Demo</title>
+<title>Android Call Native to get GPS</title>
 <script language="javascript">
-  function whereami() {
-    document.getElementById("lat").innerHTML=locater.getLatitude();
-    document.getElementById("lon").innerHTML=locater.getLongitude();
+  function whereami(lat, lon) {
+    document.getElementById("lat").innerHTML=lat;
+    document.getElementById("lon").innerHTML=lon;
   }
 </script>
 </head>
@@ -13,6 +13,7 @@
 You are at: <br/> <span id="lat">(unknown)</span> latitude and <br/>
 <span id="lon">(unknown)</span> longitude.
 </p>
-<p><a onClick="whereami()">Update Location</a></p>
+<p><a onClick="whereami(locater.getLatitude(), locater.getLongitude())">
+Update Location</a></p>
 </body>
 </html>

@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> New Document </TITLE>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <script type="text/javascript" src="http://www.google.com/jsapi?key=abc"></script>
+  <script type="text/javascript" src="http://ditu.google.com/maps?file=api&amp;v=2"></script>
+  </script>
+  <script type="text/javascript">
+	function $(id){
+		return document.getElementById(id);
+	}
+	var map = {};
+	
+	function whereami(lat, lon) {
+		//map.panTo(new GLatLng(lat, lon));
+	}
+	
+	function setGpsUsingNative(){
+		var lat = locater.getLatitude(); 
+		var lon = locater.getLongitude(); 
+		if ( lat==0 || lon ==0){
+			lat = 39.956
+			lon = 116.308
+		}
+		map.setCenter(new GLatLng(lat, lon), 13);
+	}
+	
+	var trackerId = 0;
+	function loadMapsByGPS() {
+		//map = new google.maps.Map2(document.getElementById("map"));
+		map = new GMap2(document.getElementById("map"));
+		map.addControl(new GSmallMapControl());
+		map.addControl(new GMapTypeControl());
+		
+		// 通过HMTL5获取GPS
+		var gps = navigator.geolocation;
+        if (gps){ // 浏览器支持GeoLocation
+            gps.getCurrentPosition(
+				function(pos){
+					var lat = pos.coords.latitude;
+					var lon = pos.coords.longitude;
+					map.setCenter(new GLatLng(lat, lon), 13);
+				}, 
+                function(error){
+					alert("Got an error, code: " + error.code + " message: " + error.message);
+					setGpsUsingNative();
+				});			
+			// 添加GPS位置变化的跟踪
+			trackerId = gps.watchPosition(function(pos){
+				var lat = pos.coords.latitude;
+				var lon = pos.coords.longitude;
+				map.panTo(new GLatLng(lat, lon));
+			});			
+        } else {
+            setGpsUsingNative();
+        }
+		
+		// 定点的pop up window
+		//map.openInfoWindow(map.getCenter(), document.createTextNode("Here I am"));
+		
+		// 随便放5各点，带标记。Android，Chrome均可用		
+		/*
+		function createMarker(point, number) {
+		  var marker = new GMarker(point);
+		  GEvent.addListener(marker, "click", function() {
+			marker.openInfoWindowHtml("Marker #<b>" + number + "</b>");
+		  });
+		  return marker;
+		}
+		var bounds = map.getBounds();
+		var southWest = bounds.getSouthWest();
+		var northEast = bounds.getNorthEast();
+		var lngSpan = northEast.lng() - southWest.lng();
+		var latSpan = northEast.lat() - southWest.lat();
+		for (var i = 0; i < 5; i++) {
+		  var point = new GLatLng(southWest.lat() + latSpan * Math.random(),
+								  southWest.lng() + lngSpan * Math.random());
+		  map.addOverlay(createMarker(point, i + 1));
+		  //map.addOverlay(new GMarker(point));
+		} 
+		*/		
+		
+		// 从XML获得Place的L/L信息。Android上好使。IE上好使，但Chrome上不好使！
+		//<markers>
+		//   <marker lat="37.441" lng="-122.141" notes="dsf"/>
+		//   <marker lat="37.322" lng="-121.213" notes="d11"/>
+		//</markers>		
+		function createMarker(point, notes) {
+		  var marker = new GMarker(point);
+		  GEvent.addListener(marker, "click", function() {
+			// 用户点Marker的时候，弹出一个InfoWindow
+			marker.openInfoWindowHtml("Marker #<b>" + notes + "</b>");
+		  });
+		  return marker;
+		}		
+		GDownloadUrl("places.xml", function(data) {
+          var xml = GXml.parse(data);
+          var markers = xml.documentElement.getElementsByTagName("marker");
+          for (var i = 0; i < markers.length; i++) {
+            var point = new GLatLng(parseFloat(markers[i].getAttribute("lat")),
+                                    parseFloat(markers[i].getAttribute("lng")));
+            //map.addOverlay(new GMarker(point));
+			map.addOverlay(createMarker(point, markers[i].getAttribute("notes")));
+          }		  
+        });
+		
+		// 划随便画几个点，然后连线的。先确认当前地图左下角和右上角的位置，根据位置随便放置5各点，连到一起。
+		/*
+		var points = [];
+		var bounds = map.getBounds();
+		var southWest = bounds.getSouthWest();
+		var northEast = bounds.getNorthEast();
+		var lngSpan = northEast.lng() - southWest.lng();
+		var latSpan = northEast.lat() - southWest.lat();
+		for (var i = 0; i < 5; i++) {
+		  points.push(new GLatLng(southWest.lat() + latSpan * Math.random(),
+								  southWest.lng() + lngSpan * Math.random()));
+		}
+		points.sort(function(p1, p2) {
+		  return p1.lng() - p2.lng();
+		});
+		map.addOverlay(new GPolyline(points));
+		*/
+	}
+
+	function init() {	  
+	  loadMapsByGPS();
+	}
+    </script> 
+ </HEAD>
+
+ <BODY onload="init()" onunload="GUnload()">
+  <div id="map" style="width: 300px; height: 400px"></div> 
+ </BODY>
+</HTML>

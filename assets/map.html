@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> New Document </TITLE>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <script type="text/javascript" src="http://fw.qq.com/ipaddress" charset="GBK"></script>
+  <script type="text/javascript" src="http://www.google.com/jsapi?key=abc"></script>
+  <script type="text/javascript" src="http://ditu.google.cn/maps?file=api&amp;v=2&amp;key=abcdefg&sensor=true_or_false"></script>
+  <script language="javascript">
+	  function whereami() {
+		document.getElementById("lat").innerHTML=locater.getLatitude();
+		document.getElementById("lon").innerHTML=locater.getLongitude();
+	  }
+  </script>
+  <script type="text/javascript">
+	function loadMaps(address) {
+	  var map = new google.maps.Map2(document.getElementById("map"));
+      map.addControl(new GSmallMapControl());
+      map.addControl(new GMapTypeControl());
+	  var geocoder = new GClientGeocoder();
+	  geocoder.getLatLng(
+		address,
+		function(point) {
+		  if (!point) {
+			alert(address + " not found");
+			map.setCenter(new GLatLng(41.9493, 116.3975), 4);
+		  } else {
+			map.setCenter(point, 13);
+			var marker = new GMarker(point);
+			map.addOverlay(marker);
+			marker.openInfoWindowHtml(address);
+			
+			// 随便放5个点。在手机上还显示不出来。Web上可以
+			var bounds= map.getBounds();
+			var southWest= bounds.getSouthWest();
+			var northEast= bounds.getNorthEast();
+			var lngSpan= northEast.lng() - southWest.lng();
+			var latSpan= northEast.lat() - southWest.lat();
+			for (var i= 0; i< 5; i++) {
+			   var point= new GLatLng(southWest.lat() + latSpan* Math.random(),
+					southWest.lng() + lngSpan* Math.random());
+				map.addOverlay(new GMarker(point));
+			}
+		  }
+		}
+	  );
+	}
+
+	function loadMapsByGPS() {
+	  var map = new google.maps.Map2(document.getElementById("map"));
+	  map.setCenter(new GLatLng(41.9493, 116.3975), 4);
+	  //map.setCenter(new GLatLng(document.getElementById("lat"), document.getElementById("lon")), 13);
+	}
+
+	function init() {
+	  // 获取GPS，还没有成功
+	  //whereami();
+	  //loadMapsByGPS();
+	  loadMaps(IPData[2]);
+	}
+    </script> 
+ </HEAD>
+
+ <BODY onload="init()" onunload="GUnload()">
+  <div id="map" style="width: 300px; height: 400px"></div> 
+ </BODY>
+</HTML>

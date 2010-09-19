@@ -17,7 +17,6 @@ public final class R {
         public static final int OutputWindow=0x7f050002;
         public static final int console=0x7f050003;
         public static final int editUrl=0x7f050004;
-        public static final int tab1=0x7f050005;
         public static final int tabhost=0x7f050000;
         public static final int webview=0x7f050001;
     }
